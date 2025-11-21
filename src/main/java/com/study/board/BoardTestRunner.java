@@ -21,8 +21,10 @@ public class BoardTestRunner {
             // 기존 데이터 모두 삭제
             //boardRepository.deleteAll();
 
+              long count = boardRepository.count();
+
             // 1. 여러건 저장
-            boardRepository.save(new Board("첫글","JPA로 저장 테스트 01"));
+              boardRepository.save(new Board("첫글", "JPA로 저장 테스트" + (count + 1) ));
     //        boardRepository.save(new Board("두번째 글","테스트 02"));
     //        boardRepository.save(new Board("세번째 글","테스트 03"));
     //        boardRepository.save(new Board("네번째 글","테스트 04"));

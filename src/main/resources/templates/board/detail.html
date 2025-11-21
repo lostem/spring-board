@@ -14,5 +14,14 @@
 <p>
     <a th:href="@{/boards}">목록으로</a>
 </p>
+<p>
+    <a th:href="@{'/boards/' + ${board.id} + '/edit'}">수정</a>
+</p>
+<p>
+    <form th:action="@{'/boards/' + ${board.id} + '/delete'}"
+      method="post">
+    <button type="submit">삭제</button>
+    </form>
+</p>
 </body>
 </html>
