@@ -5,6 +5,9 @@
     <title>게시글 수정</title>
 </head>
 <body>
+
+
+
 <h1>게시글 수정</h1>
 
 <form th:action="@{'/boards/' + ${board.id} + '/edit'}"
@@ -23,6 +26,21 @@
         <a th:href="@{'/boards/' + ${board.id}}">취소</a>
     </div>
 
+<!-- 댓글 입력 폼 -->
+    <div>
+        <input type="text" id="comment-content" placeholder="댓글을 입력하세요">
+        <button type="button" id="comment-save-btn">등록</button>
+    </div>
+
+<!-- 댓글 리스트 -->
+    <ul id="comment-list">
+        <!--js <li>들을 채워 넣을 것 -->
+    </ul>
+
+<!-- 현재 게시글 ID를 숨겨서 보관 -->
+<input type="hidden" id="board-id" th:value="${board.id}">
 </form>
+
 </body>
 </html>
+
