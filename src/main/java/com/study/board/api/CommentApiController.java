@@ -28,4 +28,17 @@ public class CommentApiController {
     public List<Comment> getComments(@PathVariable Long boardId) {
         return commentService.getCommentsByBoardid(boardId);
     }
+
+//    @GetMapping("/test/{boardId}")
+//    public Comment testCreate(@PathVariable Long boardId,
+//                              @RequestParam String content) {
+//        return commentService.createComment(boardId, content);
+//    }
+
+    //3) 게시글별 댓글 삭제
+    @DeleteMapping("/{id}")
+    public void dleteComment(@PathVariable long id){
+        System.out.println("댓글 삭제 ============================");
+        commentService.CommentDelete(id);
+    }
 }

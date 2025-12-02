@@ -49,7 +49,7 @@
     function loadComments() {
         var boardId = document.getElementById('board-id').value;
 
-        fetch('/api/boards/' + boardId + '/comments')
+        fetch('/api/comments/' + boardId)
             .then(function (response) { return response.json(); })
             .then(function (comments) {
                 var list = document.getElementById('comment-list');
@@ -82,14 +82,16 @@
             return;
         }
 
-        fetch('/api/comments', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                boardId: boardId,
-                content: content
+            // URL에 boardId랑 content를 실어 보낸다 (POST + query string)
+            fetch('/api/comments/' + boardId + '?content=' + encodeURIComponent(content), {
+                method: 'POST'
             })
-        })
+                .then(function (response) { return response.json(); })
+                .then(function (comment) {
+                    document.getElementById('comment-content').value = '';
+                    loadComments();
+            })
+
             .then(function (response) { return response.json(); })
             .then(function (comment) {
                 document.getElementById('comment-content').value = '';

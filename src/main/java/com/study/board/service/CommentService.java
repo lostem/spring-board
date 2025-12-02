@@ -33,6 +33,12 @@ public class CommentService {
     // 2) 게시글별 댓글 목록 조회
     @Transactional(readOnly = true)
      public List<Comment> getCommentsByBoardid(Long boardid) {
-        return commentRepository.findAll();
+        return commentRepository.findByBoard_Id(boardid);
+    }
+
+    // 3) 게시글별 댓글 삭제
+    @Transactional
+    public void CommentDelete(Long id) {
+        commentRepository.deleteById(id);
     }
 }
