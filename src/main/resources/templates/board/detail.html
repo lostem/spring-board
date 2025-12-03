@@ -13,8 +13,8 @@
 
 <!-- 댓글 입력 폼 -->
 <div>
-    <input type="text" id="comment-content" placeholder="댓글을 입력하세요">
-    <button type="button" id="comment-save-btn">등록</button>
+    <textarea id="comment-content" placeholder="댓글 내용을 입력하세요"></textarea>
+    <button id="comment-btn">등록</button>
 </div>
 
 <!-- 댓글 리스트 -->
@@ -26,92 +26,16 @@
 <input type="hidden" id="board-id" th:value="${board.id}">
 
 <p>
-    <a th:href="@{/boards}">목록으로</a>
+
 </p>
 <p>
-    <a th:href="@{'/boards/' + ${board.id} + '/edit'}">수정</a>
+
 </p>
 <p>
-    <form th:action="@{'/boards/' + ${board.id} + '/delete'}"
-      method="post">
-    <button type="submit">삭제</button>
-    </form>
+
 </p>
 <script>
-    // 0. 페이지 로드 시
-    window.addEventListener('load', function () {
-        loadComments();
-        document.getElementById('comment-save-btn')
-            .addEventListener('click', createComment);
-    });
 
-    // 1. 댓글 목록 불러오기
-    function loadComments() {
-        var boardId = document.getElementById('board-id').value;
-
-        fetch('/api/comments/' + boardId)
-            .then(function (response) { return response.json(); })
-            .then(function (comments) {
-                var list = document.getElementById('comment-list');
-                list.innerHTML = '';
-
-                comments.forEach(function (comment) {
-                    var li = document.createElement('li');
-                    li.textContent = comment.content;
-                    li.dataset.id = comment.id;
-
-                    var delBtn = document.createElement('button');
-                    delBtn.textContent = '삭제';
-                    delBtn.onclick = function () {
-                        deleteComment(comment.id);
-                    };
-
-                    li.appendChild(delBtn);
-                    list.appendChild(li);
-                });
-            });
-    }
-
-    // 2. 댓글 등록
-    function createComment() {
-        var boardId = document.getElementById('board-id').value;
-        var content = document.getElementById('comment-content').value;
-
-        if (!content.trim()) {
-            alert('댓글 내용을 입력하세요');
-            return;
-        }
-
-            // URL에 boardId랑 content를 실어 보낸다 (POST + query string)
-            fetch('/api/comments/' + boardId + '?content=' + encodeURIComponent(content), {
-                method: 'POST'
-            })
-                .then(function (response) { return response.json(); })
-                .then(function (comment) {
-                    document.getElementById('comment-content').value = '';
-                    loadComments();
-            })
-
-            .then(function (response) { return response.json(); })
-            .then(function (comment) {
-                document.getElementById('comment-content').value = '';
-                loadComments();
-            });
-    }
-
-    // 3. 댓글 삭제
-    function deleteComment(commentId) {
-        if (!confirm('이 댓글을 삭제하시겠습까 ?')) {
-            return;
-        }
-
-        fetch('/api/comments/' + commentId, {
-            method: 'DELETE'
-        })
-            .then(function () {
-                loadComments();
-            });
-    }
 </script>
 
 </body>
