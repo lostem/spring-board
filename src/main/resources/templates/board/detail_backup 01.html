@@ -26,7 +26,8 @@
 <input type="hidden" id="board-id" th:value="${board.id}">
 
 <p>
-    <a th:href="@{/boards}">목록으로</a>
+    <a th:href="@{/boards}">목록</a>
+    <!-- 조회용 이동 th:href -->
 </p>
 <p>
     <a th:href="@{'/boards/' + ${board.id} + '/edit'}">수정</a>
@@ -34,6 +35,7 @@
 <p>
 <form th:action="@{'/boards/' + ${board.id} + '/delete'}"
       method="post">
+    <!-- 입력 수정 삭제 같은 변경 요청 th:action -->
     <button type="submit">삭제</button>
 </form>
 </p>
@@ -86,17 +88,11 @@
         fetch('/api/comments/' + boardId + '?content=' + encodeURIComponent(content), {
             method: 'POST'
         })
-            .then(function (response) { return response.json(); })
-            .then(function (comment) {
+            .then(function () {
                 document.getElementById('comment-content').value = '';
                 loadComments();
             })
 
-            .then(function (response) { return response.json(); })
-            .then(function (comment) {
-                document.getElementById('comment-content').value = '';
-                loadComments();
-            });
     }
 
     // 3. 댓글 삭제
