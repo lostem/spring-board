@@ -1,11 +1,10 @@
 package com.study.board.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
+@Data
 public class Member {
 
     @Id
@@ -14,6 +13,12 @@ public class Member {
 
     private String name;
 
+    @Column(nullable = false, unique = true, length = 50)
+    private String username;
+
+    @Column(nullable = false)
+    private String password;
+
     protected Member() {
     }
 
@@ -21,11 +26,4 @@ public class Member {
         this.name = name;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
 }

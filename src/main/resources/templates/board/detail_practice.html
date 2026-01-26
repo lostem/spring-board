@@ -1,0 +1,131 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Board Detail</title>
+</head>
+<body>
+<h1>Board detail</h1>
+
+<p>ID: <span th:text="${board.id}">1</span></p>
+<p>Title: <span th:text="${board.title}">title</span></p>
+<p>Content: <span th:text="${board.content}">content</span></p>
+
+<!-- 댓글 입력 폼 -->
+<div>
+    <textarea id="comment-content" placeholder="댓글 내용을 입력하세요"></textarea>
+    <button id="comment-btn">등록</button>
+</div>
+
+<!-- 댓글 리스트 -->
+<ul id="comment-list">
+    <!--js <li>들을 채워 넣을 것 -->
+</ul>
+
+<!-- 현재 게시글 ID를 숨겨서 보관 -->
+<input type="hidden" id="board-id" th:value="${board.id}">
+
+<p>
+    <a th:href="@{/boards}" id="board-list">목록</a>
+</p>
+<p>
+    <a th:href="@{'/boards' + ${board.id} + '/edit'}">수정</a>
+</p>
+<p>
+    <form th:action="@{'/boards/' + ${board.id} + '/delete'}" method="post"></form>
+    <button type="submit">삭제</button>
+</p>
+<script>
+    // 페이지 로드
+    window.addEventListener('load', function (){
+        // 코멘트 목록
+        loadComments();
+        // 버튼 이벤트
+        document.getElementById('comment-save-btn')
+        //DOM 에서 ID가 comment-save-btn 인 요소(Elemnet)를 하나 가져옴
+        .addEventListener('click', createComment);
+        //클릭 이벤트가 발생했을때 핸들러를 등록함
+        //정리하면 ID로 버튼 요소를 찾고 그 버튼이 클릭되면 실행할 함수를 등록함
+    });
+
+    // 댓글 목록 불러오기
+    function loadComments() {
+        var boardId = document.getElementById("board-id").value;
+
+
+        fetch('/api/comments/' + boardId)
+        //선언 URL 대로 HTPP요청 보내기 (기본은 GET 방식)
+        .then(function (response) {return response.json(); })
+        //응답 본문을 JSON 파싱해서 JS 객체/배열로 바꿈
+        .then(function (comments){
+            var list = document.getElementById('comment-list');
+            list.innerHTML = '';
+            //DOM 에서 ID가 comment-list 인 요소 엘레먼트를 하나 가져와서 기존에 있던 댓글 li들을 싹 지우고 비우는 것
+
+            comments.forEach(function (comment){
+                var li = document.createElement('li');
+                //<li></li> 라는 빈 DOM 요소를 메모리에 만듬 li는 리스트 아이템 태그로 만듬
+                li.textContent = comment.content;
+                li.dataset.id = comment.id;
+                //dataset HTML의 data-* 속성과 연결되는 저장공간
+                //li.textConten 아 li.dataset에서 데이터는 들어가 있음
+
+                var delBtn  = document.createElement('button');
+                delBtn.textContent = '삭제';
+                //삭제 버튼에 보일 글자를 '삭제'로 넣는거
+                delBtn.onclick = function () {
+                    deleteComment(comment.id);
+                    //onclick 시 실행할 함수를 등록하고, 클릭이 발생하면 그 함수가 실행되면서
+                    //deleteComment(comment.id)가 호출되어 comment.id가 파라미터로 전달된다.
+                };
+
+                li.appendChild(delBtn);
+                //li(한 줄 댓글) 안에 삭제 버튼을 넣는다(자식으로 붙임)
+                list.appendChild(li);
+                //ul(댓글 목록) 안에 li(댓글 한 줄)을 넣는다
+                //완성된 li를 화면 DOM 구조에 붙여서 보이게 하는 작업
+            });
+        });
+    }
+
+    // 댓글 등록
+    function createComments() {
+        var boardId = document.getElementById('board-id').value
+        //화면에서 id가 board-id 인것을 찾아(getElementById) 그안에 값을 꺼내서 boardId에 저장함
+        var content = document.getElementById('comment-content').value;
+        //화면에서 id가 comment-content 인것을 찾아 그 값을 content에 저장함
+
+        if(!content.trim()) {
+            alert('댓글 내용을 입력하세요');
+            return;
+        }
+        //댓글 내용을 양쪽 공백 제거 한 결과가 없으면 경고창 출력
+        fetch('/api/comments/' + boardId + '?content=' + encodeURIComponent(content),{
+            method:'POST'
+        })
+        //서버 주소로 요청을 보내는 코드로 encodeURIComponent는 댓글 내용에 공백/특수문자등이 있어도 URL에서 깨지지 않게 안전한 문자로 바꿔줌
+        .then(function () {
+            document.getElementById('comment-content').value='';
+        })
+        //요청이 성공으로 처리되면 정확히는 입력창을 비움
+    }
+
+    // 댓글 삭제
+    function deleteComments(commentId) {
+        if(!confirm('이 댓글을 삭제하시겠습니까?')) {
+            return;
+        }
+        //확인창을 띄우고 사용자 취소하면 함수 종료함
+        fetch('/api/comments/' + commentId, {
+            method:'DELETE'
+        })
+        //서버주소로 요청을 보내며 commentId로 삭제함
+        .then(function (){
+            loadComments();
+        })
+        //삭제 요청이 처리된 뒤 댓글 목록을 다시 불러옴
+    }
+</script>
+
+</body>
+</html>

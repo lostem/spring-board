@@ -13,8 +13,8 @@
 
 <!-- 댓글 입력 폼 -->
 <div>
-    <textarea id="comment-content" placeholder="댓글 내용을 입력하세요"></textarea>
-    <button id="comment-btn">등록</button>
+    <input type="text" id="comment-content" placeholder="댓글을 입력하세요">
+    <button type="button" id="comment-save-btn">등록</button>
 </div>
 
 <!-- 댓글 리스트 -->
@@ -26,88 +26,87 @@
 <input type="hidden" id="board-id" th:value="${board.id}">
 
 <p>
-    <a th:href="@{/boards}" id="board-list">목록</a>
+    <a th:href="@{/boards}">목록</a>
+    <!-- 조회용 이동 th:href -->
 </p>
 <p>
-    <a th:href="@{'/boards' + ${board.id} + '/edit'}">수정</a>
+    <a th:href="@{'/boards/' + ${board.id} + '/edit'}">수정</a>
 </p>
 <p>
-    <form th:action="@{'/boards/' + ${board.id} + '/delete'}" method="post"></form>
+<form th:action="@{'/boards/' + ${board.id} + '/delete'}"
+      method="post">
+    <!-- 입력 수정 삭제 같은 변경 요청 th:action -->
     <button type="submit">삭제</button>
+</form>
 </p>
 <script>
-    // 페이지 로드
-    window.addEventListener('load', function (){
-        // 코멘트 목록
+    // 0. 페이지 로드 시
+    window.addEventListener('load', function () {
         loadComments();
-        // 버튼 이벤트
         document.getElementById('comment-save-btn')
-        //DOM 에서 ID가 comment-save-btn 인 요소(Elemnet)를 하나 가져옴
-        .addEventListener('click', createComment);
-        //클릭 이벤트가 발생했을때 핸들러를 등록함
-        //정리하면 ID로 버튼 요소를 찾고 그 버튼이 클릭되면 실행할 함수를 등록함
+            .addEventListener('click', createComment);
     });
 
-    // 댓글 목록 불러오기
+    // 1. 댓글 목록 불러오기
     function loadComments() {
-        var boardId = document.getElementById("board-id").value;
-
+        var boardId = document.getElementById('board-id').value;
 
         fetch('/api/comments/' + boardId)
-        //선언 URL 대로 HTPP요청 보내기 (기본은 GET 방식)
-        .then(function (response) {return response.json(); })
-        //응답 본문을 JSON 파싱해서 JS 객체/배열로 바꿈
-        .then(function (comments){
-            var list = document.getElementById('comment-list');
-            list.innerHTML = '';
-            //DOM 에서 ID가 comment-list 인 요소 엘레먼트를 하나 가져와서 기존에 있던 댓글 li들을 싹 지우고 비우는 것
+            .then(function (response) { return response.json(); })
+            .then(function (comments) {
+                var list = document.getElementById('comment-list');
+                list.innerHTML = '';
 
-            comments.forEach(function (comment){
-                var li = document.createElement('li');
-                //<li></li> 라는 빈 DOM 요소를 메모리에 만듬 li는 리스트 아이템 태그로 만듬
-                li.textContent = comment.content;
-                li.dataset.id = comment.id;
-                //dataset HTML의 data-* 속성과 연결되는 저장공간
-                //li.textConten 아 li.dataset에서 데이터는 들어가 있음
+                comments.forEach(function (comment) {
+                    var li = document.createElement('li');
+                    li.textContent = comment.content;
+                    li.dataset.id = comment.id;
 
-                var delBtn  = document.createElement('button');
-                delBtn.textContent = '삭제';
-                //삭제 버튼에 보일 글자를 '삭제'로 넣는거
-                delBtn.onclick = function () {
-                    deleteComment(comment.id);
-                    //onclick 시 실행할 함수를 등록하고, 클릭이 발생하면 그 함수가 실행되면서
-                    //deleteComment(comment.id)가 호출되어 comment.id가 파라미터로 전달된다.
-                };
+                    var delBtn = document.createElement('button');
+                    delBtn.textContent = '삭제';
+                    delBtn.onclick = function () {
+                        deleteComment(comment.id);
+                    };
 
-                li.appendChild(delBtn);
-                //li(한 줄 댓글) 안에 삭제 버튼을 넣는다(자식으로 붙임)
-                list.appendChild(li);
-                //ul(댓글 목록) 안에 li(댓글 한 줄)을 넣는다
-                //완성된 li를 화면 DOM 구조에 붙여서 보이게 하는 작업
+                    li.appendChild(delBtn);
+                    list.appendChild(li);
+                });
             });
-        });
     }
 
-    // 댓글 등록
-    function createComments() {
+    // 2. 댓글 등록
+    function createComment() {
         var boardId = document.getElementById('board-id').value;
         var content = document.getElementById('comment-content').value;
 
-        if(!content.trim) {
+        if (!content.trim()) {
             alert('댓글 내용을 입력하세요');
             return;
         }
-        fetch('/api/comments/' + boradId + '?content=' + encodeURIComponent(content),{
-            method:'POST'
+
+        // URL에 boardId랑 content를 실어 보낸다 (POST + query string)
+        fetch('/api/comments/' + boardId + '?content=' + encodeURIComponent(content), {
+            method: 'POST'
         })
-        .then(function () {
-            document.getElementById('comment-content').value='';
-        })
+            .then(function () {
+                document.getElementById('comment-content').value = '';
+                loadComments();
+            })
+
     }
 
-    // 댓글 삭제
-    function deleteComments() {
+    // 3. 댓글 삭제
+    function deleteComment(commentId) {
+        if (!confirm('이 댓글을 삭제하시겠습까 ?')) {
+            return;
+        }
 
+        fetch('/api/comments/' + commentId, {
+            method: 'DELETE'
+        })
+            .then(function () {
+                loadComments();
+            });
     }
 </script>
 

@@ -25,11 +25,20 @@ public class Comment {
         this.board = board;
     }
 
-    public Long getId() {return id;}
+    public Long getId() {
+        return id;}
 
-    public String getContent() {return content;}
-    public void setContent(String content) {this.content = content;}
+    public String getContent() {
+        return content;
+    }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-    public Board getBoard() {return board;}
-    public void setBoard(Board board) {this.board = board;}
+    public Board getBoard() {
+        return board;
+    }
+    public void setBoard(Board board) {
+        this.board = board;
+    }
 }

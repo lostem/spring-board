@@ -18,6 +18,15 @@ public class BoardController {
         this.boardRepository = boardRepository;
     }
 
+    @Controller
+    public class HomeController {
+
+        @GetMapping("/") // 그냥 주소창에 localhost:8080 쳤을 때
+        public String home() {
+            // "게시글 목록 페이지로 가라!" (게시판 주소가 /board/list 라고 가정)
+            return "redirect:/board/list";
+        }
+    }
     //게시글 목록 조회
     @GetMapping("/boards")
     public String list(Model model) {
@@ -35,7 +44,7 @@ public class BoardController {
 
         model.addAttribute("board", board);
 
-        return "board/detail";  //templates/board/detail.html
+        return "board/detail";  //templates/board/detail_practice.html
     }
 
     @GetMapping("/boards/new")
